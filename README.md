@@ -1,8 +1,11 @@
 # UniversalMixin
 
-This is a vibe-coded attempt to make a simple mixin library for my mündliche Überprüfung.
-The theory behind it is to modify the bytecode of a specific class so that it inserts code at the top or bottom of a method.
-An access widener is simply a tool to widen access to private or protected variables so you can get a reference to them.
+Proof of consept java mod injecor with bitcode manimulation.
+
+## AI
+
+Ai helpt in the createon of thes project.
+
 
 ## Build and use the agent
 
