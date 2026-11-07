@@ -1,5 +1,6 @@
 plugins {
-    id("java")
+    id("java-library")
+    id("maven-publish")
 }
 
 group = "info.cho"
@@ -14,6 +15,7 @@ val asmVersion = "9.11.1"
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+    withSourcesJar()
 }
 
 tasks.withType<JavaCompile>().configureEach {
@@ -50,6 +52,37 @@ val agentJar = tasks.register<Jar>("agentJar") {
         "META-INF/*.SF", "META-INF/*.RSA", "META-INF/*.DSA",
         "module-info.class", "META-INF/versions/**/module-info.class"
     )
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("library") {
+            from(components["java"])
+            artifactId = "universal-mixin"
+            artifact(agentJar)
+            pom {
+                name = "UniversalMixin"
+                description = "A small Java library and agent for launch-time mixins."
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "localBuild"
+            url = uri(layout.buildDirectory.dir("repository"))
+        }
+    }
+}
+
+tasks.register<Sync>("prepareLibraryExample") {
+    description = "Prepares an independent Gradle project using only the bundled library JAR."
+    group = "application"
+    into(layout.buildDirectory.dir("library-example"))
+    from("examples/basic")
+    from(agentJar) {
+        into("libs")
+        rename { "universal-mixin.jar" }
+    }
 }
 
 val example = sourceSets.create("example")
